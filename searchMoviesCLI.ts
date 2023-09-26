@@ -15,8 +15,8 @@ async function findMovies() {
             let movieTitle = question("Search for a movie title: ").toLowerCase();
             try{
                 const res = await client.query("SELECT id, name, date, runtime, budget, revenue, vote_average, votes_count FROM movies WHERE lower(name) LIKE $1 AND kind = $2 ORDER BY date DESC LIMIT 10", [`%${movieTitle}%`, 'movie'])
-                console.table(res.rows);
-                let favOptions = res.rows.map((e)=>e.name)
+                res.rows.length>0 && console.table(res.rows)
+                let favOptions = res.rows.map((e:MovieFormat)=>e.name)
                 let favIndex = keyInSelect(favOptions, 'Choose a movie to favourite: ');
                 if (favIndex!==-1){
                     console.log(`Saving ${res.rows[favIndex].name} to favorites`)
@@ -40,15 +40,15 @@ async function findMovies() {
     await client.end()
 }
 
-// interface MovieFormat {
-//     id: string;
-//     name: string;
-//     date: string;
-//     runtime: number;
-//     budget: string;
-//     revenue: string;
-//     vote_average: string|null;
-//     votes_count: string|null;
-//   }
+interface MovieFormat {
+    id: string;
+    name: string;
+    date: string;
+    runtime: number;
+    budget: string;
+    revenue: string;
+    vote_average: string|null;
+    votes_count: string|null;
+  }
 
 findMovies()
